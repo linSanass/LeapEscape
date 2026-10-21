@@ -47,3 +47,9 @@ TagManager:
   - name: Player
     uniqueID: 3278449251
     locked: 0
+  - name: Obstacle
+    uniqueID: 2318409123
+    locked: 0
+  - name: Front
+    uniqueID: 2706640495
+    locked: 0
