@@ -1552,8 +1552,8 @@ MonoBehaviour:
   obstaclePrefab: {fileID: 1686072111629596500, guid: b3f3f27a17576814790d2cef12d132dc,
     type: 3}
   obstacleNum: 200
-  obstacleMaxDiameter: 0.4
-  obstacleMinDiameter: 0.2
+  obstacleMaxDiameter: 0.35
+  obstacleMinDiameter: 0.15
   spacingX: 0.2
   spacingY: 0.4
   randomOffset: 0.2
@@ -1725,6 +1725,7 @@ MonoBehaviour:
   pressSpeedX: 4
   speedY: 2
   input: {fileID: 923593540}
+  footTrans: {fileID: 1494197150}
 --- !u!114 &923593540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3071,9 +3072,9 @@ Transform:
   m_GameObject: {fileID: 1494197149}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06, y: -0.247, z: 0}
+  m_LocalPosition: {x: -0.1, y: -0.231, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 827006904}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3117,7 +3118,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1016518045
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: a993660f6c8f32a48a91a5c8289e7660, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

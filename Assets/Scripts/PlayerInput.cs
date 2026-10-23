@@ -4,7 +4,7 @@ public class PlayerInput : MonoBehaviour
 {
     public float pressThreshold = 0.15f;
 
-    public float Direction { get; private set; } = 1f;
+    public int Direction { get; private set; } = 1;
     public bool IsPressing { get; private set; }
 
     private bool isLeft;
@@ -31,7 +31,7 @@ public class PlayerInput : MonoBehaviour
         if (isDown)
         {
             isLeft = !isLeft;
-            Direction = isLeft ? -1f : 1f;
+            Direction = isLeft ? -1 : 1;
             pressTime = 0f;
             IsPressing = false;
         }
