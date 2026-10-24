@@ -1,12 +1,16 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class PlayerInput : SingLetonAutoMono<PlayerInput>
+public class PlayerInput : SingLetonAutoMono<PlayerInput>, IPointerDownHandler, IPointerUpHandler
 {
     public float pressThreshold = 0.15f;
 
     public int Direction { get; private set; } = -1;
     public bool IsPressing { get; private set; }
-    public bool IsInputEnabled { get; private set; } = true;
+    public bool IsHolding { get; private set; }
+
+    // 开局关闭，开始游戏后再打开
+    public bool IsInputEnabled { get; private set; } = false;
 
     private bool isLeft = true;
     private float pressTime;
@@ -15,48 +19,44 @@ public class PlayerInput : SingLetonAutoMono<PlayerInput>
     {
         if (IsInputEnabled == value) return;
         IsInputEnabled = value;
+        if (!value) ResetState();
+    }
+
+    private void ResetState()
+    {
+        IsHolding = false;
+        IsPressing = false;
+        pressTime = 0f;
+    }
+
+    public void OnPointerDown(PointerEventData e)
+    {
+        if (!IsInputEnabled) return;
+        
+        isLeft = !isLeft;
+        Direction = isLeft ? -1 : 1;
         pressTime = 0f;
         IsPressing = false;
+        IsHolding = true;
+    }
+
+    public void OnPointerUp(PointerEventData e)
+    {
+        ResetState();
     }
 
     void Update()
     {
         if (!IsInputEnabled) return;
-
-        bool isDown, isHold, isUp;
-
-        if (Input.touchCount > 0)
-        {
-            Touch t = Input.GetTouch(0);
-            isDown = t.phase == TouchPhase.Began;
-            isHold = t.phase == TouchPhase.Moved || t.phase == TouchPhase.Stationary;
-            isUp   = t.phase == TouchPhase.Ended || t.phase == TouchPhase.Canceled;
-        }
-        else
-        {
-            isDown = Input.GetMouseButtonDown(0);
-            isHold = Input.GetMouseButton(0);
-            isUp   = Input.GetMouseButtonUp(0);
-        }
-
-        if (isDown)
-        {
-            isLeft = !isLeft;
-            Direction = isLeft ? -1 : 1;
-            pressTime = 0f;
-            IsPressing = false;
-        }
-
-        if (isHold)
+        if (IsHolding)
         {
             pressTime += Time.deltaTime;
             IsPressing = pressTime > pressThreshold;
         }
+    }
 
-        if (isUp)
-        {
-            pressTime = 0f;
-            IsPressing = false;
-        }
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus) ResetState();
     }
 }
