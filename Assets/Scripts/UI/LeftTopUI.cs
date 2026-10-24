@@ -44,18 +44,29 @@ public class LeftTopUI : UIPanel
     }
     private void Subscribe()
     {
-        EventCenter.AddListener(Event.OnDataInit, RefreshUI);
-        EventCenter.AddListener(Event.OnMusicChanged, RefreshUI);
-        EventCenter.AddListener(Event.OnSfxChanged, RefreshUI);
+        EventCenter.AddListener(Event.OnDataInit, HandleOnDataInit);
+        EventCenter.AddListener(Event.GameStart, HandleGameStart);
+        EventCenter.AddListener(Event.OnMusicChanged, RefreshAudioUI);
+        EventCenter.AddListener(Event.OnSfxChanged, RefreshAudioUI);
     }
     private void Unsubscribe()
     {
-        EventCenter.RemoveListener(Event.OnDataInit, RefreshUI);
-        EventCenter.RemoveListener(Event.OnMusicChanged, RefreshUI);
-        EventCenter.RemoveListener(Event.OnSfxChanged, RefreshUI);
+        EventCenter.RemoveListener(Event.OnDataInit, HandleOnDataInit);
+        EventCenter.AddListener(Event.GameStart, HandleGameStart);
+        EventCenter.RemoveListener(Event.OnMusicChanged, RefreshAudioUI);
+        EventCenter.RemoveListener(Event.OnSfxChanged, RefreshAudioUI);
     }
-
-    private void RefreshUI()
+    private void HandleOnDataInit()
+    {
+        ShowButton();
+        RefreshAudioUI();
+    }
+    private void HandleGameStart()
+    {
+        SetExpanded(false);
+        tween.OnComplete(HideButton);
+    }
+    private void RefreshAudioUI()
     {
         var d = GameManager.Instance.GameData;
 
@@ -75,6 +86,18 @@ public class LeftTopUI : UIPanel
         GameManager.Instance.SetSfxEnabled(!GameManager.Instance.GameData.sfxOn);
     }
 
+    public void ShowButton()
+    {
+        Setting_But.DOKill();
+        Setting_But.transform.localScale = Vector3.zero;
+        Setting_But.transform.DOScale(1f, 1f).SetEase(Ease.OutBack);
+    }
+
+    public void HideButton()
+    {
+        Setting_But.transform.DOKill();
+        Setting_But.transform.DOScale(0f, 0.8f).SetEase(Ease.InBack);
+    }
     /// <summary>
     /// 设置展开
     /// </summary>
@@ -83,6 +106,12 @@ public class LeftTopUI : UIPanel
     {
         isExpanded = open;
         tween?.Kill();
+
+        if (open)
+        {
+            musicRect.gameObject.SetActive(true);
+            tipRect.gameObject.SetActive(true);
+        }
 
         float target = open ? 1f : 0f;
         float duration = open ? openDuration : closeDuration;
@@ -101,5 +130,11 @@ public class LeftTopUI : UIPanel
         musicRect.anchoredPosition = Vector2.Lerp(hiddenPos, musicTarget, t);
         tipRect.anchoredPosition = Vector2.Lerp(hiddenPos, tipTarget, t);
         Music_Btn.interactable = Tip_Btn.interactable = t > 0.5f;
+
+        bool visible = t > 0f;
+        if (musicRect.gameObject.activeSelf != visible)
+            musicRect.gameObject.SetActive(visible);
+        if (tipRect.gameObject.activeSelf != visible)
+            tipRect.gameObject.SetActive(visible);
     }
 }
