@@ -7,6 +7,8 @@ public class LeftTopUI : UIPanel
     [SerializeField] private Button Setting_But;
     [SerializeField] private Button Music_Btn;
     [SerializeField] private Button Tip_Btn;
+    [SerializeField] private GameObject MusicOpen_Obj;
+    [SerializeField] private GameObject Open_Obj;
     private float openDuration  = 0.2f;
     private float closeDuration = 0.1f;
 
@@ -18,15 +20,59 @@ public class LeftTopUI : UIPanel
 
     private void Awake()
     {
+        Init();
+        Subscribe();
+    }
+    private void Init()
+    {
         musicRect = (RectTransform)Music_Btn.transform;
         tipRect = (RectTransform)Tip_Btn.transform;
 
         musicTarget = musicRect.anchoredPosition;
         tipTarget = tipRect.anchoredPosition;
         hiddenPos = ((RectTransform)Setting_But.transform).anchoredPosition;
+        SetCollapsed(0f); // 初始收起
 
         Setting_But.onClick.AddListener(() => SetExpanded(!isExpanded));
-        SetCollapsed(0f); // 初始收起
+        Music_Btn.onClick.AddListener(OpenOrCloseBGM);
+        Tip_Btn.onClick.AddListener(OpenOrCloseSFX);
+    }
+
+    void OnDestroy()
+    {
+        Unsubscribe();
+    }
+    private void Subscribe()
+    {
+        EventCenter.AddListener(Event.OnDataInit, RefreshUI);
+        EventCenter.AddListener(Event.OnMusicChanged, RefreshUI);
+        EventCenter.AddListener(Event.OnSfxChanged, RefreshUI);
+    }
+    private void Unsubscribe()
+    {
+        EventCenter.RemoveListener(Event.OnDataInit, RefreshUI);
+        EventCenter.RemoveListener(Event.OnMusicChanged, RefreshUI);
+        EventCenter.RemoveListener(Event.OnSfxChanged, RefreshUI);
+    }
+
+    private void RefreshUI()
+    {
+        var d = GameManager.Instance.GameData;
+
+        AudioManager.Instance.SetBGMMute(!d.musicOn);
+        MusicOpen_Obj.SetActive(d.musicOn);
+
+        AudioManager.Instance.SetSFXMute(!d.sfxOn);
+        Open_Obj.SetActive(d.sfxOn);
+    }
+    private void OpenOrCloseBGM()
+    {
+        GameManager.Instance.SetMusicEnabled(!GameManager.Instance.GameData.musicOn);
+    }
+
+    private void OpenOrCloseSFX()
+    {
+        GameManager.Instance.SetSfxEnabled(!GameManager.Instance.GameData.sfxOn);
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingLetonAutoMono<GameManager>
 {
     private enum GameState
     {
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
 
     public GameData GameData => gameData;
 
-    private void Awake()
+    void Start()
     {
         PrepareData();
     }
@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         input = PlayerInput.Instance;
         input.SetInputEnabled(false);
         currentGameState = GameState.GamePause;
+        EventCenter.TriggerEvent(Event.OnDataInit);
     }
 
     /// <summary>
@@ -140,25 +141,37 @@ public class GameManager : MonoBehaviour
 
         // 保存当前关卡
         SaveManager.Save(gameData);
-        
+
     }
 
     /// <summary>
-    /// 修改音乐开关
+    /// 保存游戏数据
     /// </summary>
+    public void SaveGameData()
+    {
+        SaveManager.Save(gameData);
+    }
+
+    /// <summary>
+    /// 设置BGM
+    /// </summary>
+    /// <param name="enabled"></param>
     public void SetMusicEnabled(bool enabled)
     {
         gameData.musicOn = enabled;
         SaveManager.Save(gameData);
+        EventCenter.TriggerEvent(Event.OnMusicChanged);
     }
 
     /// <summary>
-    /// 修改音效开关
+    /// 设置SFX
     /// </summary>
+    /// <param name="enabled"></param>
     public void SetSfxEnabled(bool enabled)
     {
         gameData.sfxOn = enabled;
         SaveManager.Save(gameData);
+        EventCenter.TriggerEvent(Event.OnSfxChanged);
     }
 
     /// <summary>

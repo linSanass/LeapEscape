@@ -1537,7 +1537,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.999958, y: -0}
+  m_AnchoredPosition: {x: -2.999958, y: 0}
   m_SizeDelta: {x: 47.632, y: 47.632}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &664767110
@@ -3357,50 +3357,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1277194109
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1277194111}
-  - component: {fileID: 1277194110}
-  m_Layer: 0
-  m_Name: GameDataManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1277194110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1277194109}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed691e15795fa9041b770c73a3d57adc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1277194111
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1277194109}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.126746, y: 1.7673726, z: 3510.5146}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1281838784
 GameObject:
   m_ObjectHideFlags: 0
@@ -5027,7 +4983,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.999958, y: -0}
+  m_AnchoredPosition: {x: -2.999958, y: 0}
   m_SizeDelta: {x: 47.632, y: 47.632}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1578411152
@@ -5871,6 +5827,8 @@ MonoBehaviour:
   Setting_But: {fileID: 1567673830}
   Music_Btn: {fileID: 2121622310}
   Tip_Btn: {fileID: 1184001178}
+  MusicOpen_Obj: {fileID: 840014803}
+  Open_Obj: {fileID: 1200163406}
 --- !u!1 &2004027707
 GameObject:
   m_ObjectHideFlags: 0
@@ -6507,6 +6465,5 @@ SceneRoots:
   - {fileID: 923593538}
   - {fileID: 808554703}
   - {fileID: 617601344}
-  - {fileID: 1277194111}
   - {fileID: 1447473570}
   - {fileID: 1130883062}

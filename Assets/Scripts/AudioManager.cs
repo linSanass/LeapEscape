@@ -17,6 +17,7 @@ public class AudioManager : SingLetonAutoMono<AudioManager>
     [SerializeField] private AudioClip ski;
 
     // ===================== 播放BGM =====================
+    public void PlayBGM() => bgmSource.Play();
     public void StopBGM() => bgmSource.Stop();
     public void PauseBGM() => bgmSource.Pause();
     public void ResumeBGM() => bgmSource.UnPause();
@@ -27,10 +28,21 @@ public class AudioManager : SingLetonAutoMono<AudioManager>
     public void PlayLevelUp() => PlaySFX(levelUp);
     public void PlayPerfect() => PlaySFX(perfect);
     public void PlaySki() => PlaySFX(ski);
-    
+
     private void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
         sfxSource.PlayOneShot(clip);
+    }
+
+    // ===================== 静音控制 =====================
+    public void SetBGMMute(bool mute)
+    {
+        bgmSource.mute = mute;
+    }
+
+    public void SetSFXMute(bool mute)
+    {
+        sfxSource.mute = mute;
     }
 }
