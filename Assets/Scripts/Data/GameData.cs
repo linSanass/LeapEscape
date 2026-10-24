@@ -1,18 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-public class GameData : MonoBehaviour
+/// <summary>
+/// 玩家整体存档数据
+/// </summary>
+[Serializable]
+public class GameData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int currentLevel;
+    public int bestScore;
+    public bool musicOn;
+    public bool sfxOn;
 
-    // Update is called once per frame
-    void Update()
+    public GameData(int currentLevel = 1, int bestScore = 0, bool musicOn = true, bool sfxOn = true)
     {
-        
+        this.currentLevel = currentLevel;
+        this.bestScore = bestScore;
+        this.musicOn = musicOn;
+        this.sfxOn = sfxOn;
     }
 }
