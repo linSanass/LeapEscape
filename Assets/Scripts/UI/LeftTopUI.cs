@@ -7,82 +7,53 @@ public class LeftTopUI : UIPanel
     [SerializeField] private Button Setting_But;
     [SerializeField] private Button Music_Btn;
     [SerializeField] private Button Tip_Btn;
-
-    [SerializeField] private float openDuration  = 0.25f;
-    [SerializeField] private float closeDuration = 0.2f;
+    private float openDuration  = 0.2f;
+    private float closeDuration = 0.1f;
 
     private RectTransform musicRect, tipRect;
-    private Vector2 musicTarget, tipTarget;
-    private Vector2 hiddenPos;
-    private bool isExpanded;
+    private Vector2 musicTarget, tipTarget, hiddenPos;
+    private Tween tween;
+    private float progress;// 0 = 收起, 1 = 展开
+    private bool  isExpanded;
 
     private void Awake()
     {
         musicRect = (RectTransform)Music_Btn.transform;
-        tipRect   = (RectTransform)Tip_Btn.transform;
+        tipRect = (RectTransform)Tip_Btn.transform;
 
-        // 记录编辑器里摆好的最终位置
         musicTarget = musicRect.anchoredPosition;
-        tipTarget   = tipRect.anchoredPosition;
-
-        // 收起位置 = 设置按钮的位置（水平对齐，垂直贴着按钮）
+        tipTarget = tipRect.anchoredPosition;
         hiddenPos = ((RectTransform)Setting_But.transform).anchoredPosition;
 
-        Setting_But.onClick.AddListener(Toggle);
-        SetExpanded(false, true);   // 初始收起，不播动画
+        Setting_But.onClick.AddListener(() => SetExpanded(!isExpanded));
+        SetCollapsed(0f); // 初始收起
     }
 
-    private void Toggle()
+    /// <summary>
+    /// 设置展开
+    /// </summary>
+    /// <param name="open"></param>
+    private void SetExpanded(bool open)
     {
-        isExpanded = !isExpanded;
-        SetExpanded(isExpanded, false);
+        isExpanded = open;
+        tween?.Kill();
+
+        float target = open ? 1f : 0f;
+        float duration = open ? openDuration : closeDuration;
+        Ease ease = open ? Ease.OutQuart : Ease.InQuart;
+
+        tween = DOVirtual.Float(progress, target, duration, SetCollapsed).SetEase(ease);
     }
 
-    private void SetExpanded(bool open, bool instant)
+    /// <summary>
+    /// 设置收起
+    /// </summary>
+    /// <param name="t"></param>
+    private void SetCollapsed(float t)
     {
-        musicRect.DOKill();
-        tipRect.DOKill();
-        Music_Btn.interactable = open;
-        Tip_Btn.interactable   = open;
-
-        if (open)
-        {
-            Music_Btn.gameObject.SetActive(true);
-            Tip_Btn.gameObject.SetActive(true);
-        }
-
-        if (instant)
-        {
-            musicRect.anchoredPosition = open ? musicTarget : hiddenPos;
-            tipRect.anchoredPosition   = open ? tipTarget   : hiddenPos;
-            if (!open)
-            {
-                Music_Btn.gameObject.SetActive(false);
-                Tip_Btn.gameObject.SetActive(false);
-            }
-            return;
-        }
-
-        if (open)
-        {
-            // 从按钮位置滑到目标位置
-            musicRect.anchoredPosition = hiddenPos;
-            tipRect.anchoredPosition   = hiddenPos;
-            musicRect.DOAnchorPos(musicTarget, openDuration).SetEase(Ease.OutQuart);
-            tipRect.DOAnchorPos(tipTarget, openDuration).SetEase(Ease.OutQuart);
-        }
-        else
-        {
-            musicRect.DOAnchorPos(hiddenPos, closeDuration).SetEase(Ease.InQuart);
-            tipRect.DOAnchorPos(hiddenPos, closeDuration).SetEase(Ease.InQuart)
-                .OnComplete(() =>
-                {
-                    if (!isExpanded)
-                    {
-                        Music_Btn.gameObject.SetActive(false);
-                        Tip_Btn.gameObject.SetActive(false);
-                    }
-                });
-        }
+        progress = t;
+        musicRect.anchoredPosition = Vector2.Lerp(hiddenPos, musicTarget, t);
+        tipRect.anchoredPosition = Vector2.Lerp(hiddenPos, tipTarget, t);
+        Music_Btn.interactable = Tip_Btn.interactable = t > 0.5f;
     }
 }
