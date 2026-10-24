@@ -1711,13 +1711,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstaclePrefab: {fileID: 1686072111629596500, guid: b3f3f27a17576814790d2cef12d132dc,
     type: 3}
-  obstacleNum: 200
+  obstacleNum: 120
   obstacleMaxDiameter: 0.35
   obstacleMinDiameter: 0.15
   spacingX: 0.2
   spacingY: 0.4
   randomOffset: 0.2
-  rowCount: 120
+  rowCount: 60
 --- !u!4 &808554703
 Transform:
   m_ObjectHideFlags: 0
@@ -1784,7 +1784,7 @@ GameObject:
   - component: {fileID: 923593536}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4917,8 +4917,6 @@ MonoBehaviour:
   Setting_But: {fileID: 1567673830}
   Music_Btn: {fileID: 2121622310}
   Tip_Btn: {fileID: 1184001178}
-  openDuration: 0.25
-  closeDuration: 0.2
 --- !u!1 &2004027707
 GameObject:
   m_ObjectHideFlags: 0

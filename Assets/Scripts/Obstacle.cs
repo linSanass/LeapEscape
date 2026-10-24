@@ -1,18 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private Transform visualRoot;
+    private string playerTag = "Player";
+    private float hitScale = 1.3f;
+    private float hitDuration = 0.15f;
+    private Vector3 originalScale;
+
     void Start()
     {
-        
+        visualRoot = transform;
+        originalScale = visualRoot.localScale;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        
+        if (!other.CompareTag(playerTag)) return;
+
+        DOTween.Sequence().Append(visualRoot.DOScale(originalScale * hitScale, hitDuration)).Append(visualRoot.DOScale(originalScale, hitDuration));
+
+        Debug.Log($"玩家撞到了 {name}");
     }
 }

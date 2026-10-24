@@ -39,17 +39,23 @@ public class PlayerController : MonoBehaviour
     private void Subscribe()
     {
         EventCenter.AddListener(Event.GameStart, HandleGameStart);
+        EventCenter.AddListener(Event.GameOver, HandleGameOver);
     }
     private void Unsubscribe()
     {
         EventCenter.RemoveListener(Event.GameStart, HandleGameStart);
+        EventCenter.RemoveListener(Event.GameOver, HandleGameOver);
     }
 
     private void HandleGameStart()
     {
         isGameStart = true;
     }
-    
+    private void HandleGameOver()
+    {
+        isDead = true;
+    }
+
     void Update()
     {
         if (!isGameStart) return;
