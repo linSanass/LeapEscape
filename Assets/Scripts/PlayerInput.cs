@@ -1,17 +1,28 @@
 using UnityEngine;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInput : SingLetonAutoMono<PlayerInput>
 {
     public float pressThreshold = 0.15f;
 
-    public int Direction { get; private set; } = 1;
+    public int Direction { get; private set; } = -1;
     public bool IsPressing { get; private set; }
+    public bool IsInputEnabled { get; private set; } = true;
 
-    private bool isLeft;
+    private bool isLeft = true;
     private float pressTime;
+
+    public void SetInputEnabled(bool value)
+    {
+        if (IsInputEnabled == value) return;
+        IsInputEnabled = value;
+        pressTime = 0f;
+        IsPressing = false;
+    }
 
     void Update()
     {
+        if (!IsInputEnabled) return;
+
         bool isDown, isHold, isUp;
 
         if (Input.touchCount > 0)

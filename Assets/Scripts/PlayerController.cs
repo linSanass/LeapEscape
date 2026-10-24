@@ -7,30 +7,52 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float pressSpeedX = 5f;
     [SerializeField] private float speedY = 2f;
-    [SerializeField] private PlayerInput input;
     [SerializeField] private Transform footTrans;
+    private PlayerInput input;
     private Vector3 footStartLocalScale;
     private Vector3 footStartLocalPos;
     private Collider2D col;
     private Camera mainCamera;
     private Vector2 velocity;
     private bool isDead;
+    private bool isGameStart;
 
-    void Start()
+    void Awake()
     {
         Init();
+        Subscribe();
     }
 
+    void OnDestroy()
+    {
+        Unsubscribe();
+    }
     private void Init()
     {
+        input = PlayerInput.Instance;
         mainCamera = Camera.main;
         col = GetComponent<Collider2D>();
         footStartLocalPos = footTrans.localPosition;
         footStartLocalScale = footTrans.localScale;
     }
 
+    private void Subscribe()
+    {
+        EventCenter.AddListener(Event.GameStart, HandleGameStart);
+    }
+    private void Unsubscribe()
+    {
+        EventCenter.RemoveListener(Event.GameStart, HandleGameStart);
+    }
+
+    private void HandleGameStart()
+    {
+        isGameStart = true;
+    }
+    
     void Update()
     {
+        if (!isGameStart) return;
         if (isDead) return;
         int dir = input.Direction;
 
