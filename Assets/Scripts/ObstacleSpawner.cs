@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,14 +26,14 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("纵向候选区域")]
     public int rowCount = 100;
 
-    // prefab 原始直径
+    // Prefab 原始直径
     private const float prefabDiameter = 0.3f;
 
     private Camera mainCamera;
     private float halfWidth;
 
-    // 已生成的障碍物，用于重新生成时销毁
-    private List<GameObject> spawnedList = new List<GameObject>();
+    // 保存当前生成的障碍物，方便重新生成时归还对象池
+    private readonly List<GameObject> spawnedList = new List<GameObject>();
 
     private void Start()
     {
@@ -50,29 +51,41 @@ public class ObstacleSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// 清除旧障碍物并重新生成（可运行时多次调用）
+    /// 归还旧障碍物，并重新生成
     /// </summary>
     [ContextMenu("重新生成")]
     public void ReGenerate()
     {
+        // 将旧障碍物归还对象池
         for (int i = 0; i < spawnedList.Count; i++)
         {
-            Destroy(spawnedList[i]);
+            if (spawnedList[i] != null)
+            {
+                ObjectPoolManager.Instance.Release(
+                    obstaclePrefab,
+                    spawnedList[i]
+                );
+            }
         }
+
         spawnedList.Clear();
 
         CreateObstacle();
     }
 
     /// <summary>
-    /// 计算布局并循环创建障碍物
+    /// 计算布局并生成障碍物
     /// </summary>
     private void CreateObstacle()
     {
-        if (rowCount <= 0) return;
+        if (rowCount <= 0 || obstaclePrefab == null)
+            return;
 
         float intervalX = obstacleMaxDiameter + spacingX;
         float intervalY = obstacleMaxDiameter + spacingY;
+
+        if (intervalX <= 0f || intervalY <= 0f)
+            return;
 
         float offsetX = spacingX * randomOffset;
         float offsetY = spacingY * randomOffset;
@@ -80,50 +93,60 @@ public class ObstacleSpawner : MonoBehaviour
         float minX = -halfWidth + obstacleMaxDiameter / 2f + offsetX;
         float maxX = halfWidth - obstacleMaxDiameter / 2f - offsetX;
 
-        if (minX > maxX) return;
+        if (minX > maxX)
+            return;
 
-        int columnCount = Mathf.FloorToInt((maxX - minX) / intervalX) + 1;
+        int columnCount = Mathf.FloorToInt(
+            (maxX - minX) / intervalX
+        ) + 1;
 
         float startX = -(columnCount - 1) * intervalX / 2f;
-
         float startY = -mainCamera.orthographicSize / 5f;
 
         int count = Mathf.Min(obstacleNum, rowCount * columnCount);
 
-        // 按行分层：每行先拿平均配额，余数随机分给若干行
+        // 平均分配每行的障碍物数量
         int basePerRow = count / rowCount;
         int extra = count % rowCount;
 
         int[] perRow = new int[rowCount];
+
         for (int i = 0; i < rowCount; i++)
         {
             perRow[i] = basePerRow;
         }
 
-        // 洗牌行号，前 extra 行各多 1 个
+        // 随机打乱行号
         int[] rowOrder = new int[rowCount];
+
         for (int i = 0; i < rowCount; i++)
         {
             rowOrder[i] = i;
         }
+
         for (int i = rowCount - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
+
             int temp = rowOrder[i];
             rowOrder[i] = rowOrder[j];
             rowOrder[j] = temp;
         }
+
+        // 将剩余数量随机分配给不同的行
         for (int i = 0; i < extra; i++)
         {
             perRow[rowOrder[i]]++;
         }
 
-        // 每行在行内随机选不重复的列
+        // 每行随机选择不重复的列
         for (int y = 0; y < rowCount; y++)
         {
-            if (perRow[y] <= 0) continue;
+            if (perRow[y] <= 0)
+                continue;
 
             HashSet<int> usedX = new HashSet<int>();
+
             while (usedX.Count < perRow[y])
             {
                 usedX.Add(Random.Range(0, columnCount));
@@ -131,27 +154,43 @@ public class ObstacleSpawner : MonoBehaviour
 
             foreach (int x in usedX)
             {
-                float posX = startX + x * intervalX + Random.Range(-offsetX, offsetX);
-                float posY = startY - y * intervalY + Random.Range(-offsetY, offsetY);
+                float posX = startX
+                    + x * intervalX
+                    + Random.Range(-offsetX, offsetX);
 
-                CreateSingleObstacle(new Vector2(posX, posY));
+                float posY = startY
+                    - y * intervalY
+                    + Random.Range(-offsetY, offsetY);
+
+                CreateSingleObstacle(
+                    new Vector2(posX, posY)
+                );
             }
         }
     }
 
     /// <summary>
-    /// 在指定位置创建一个随机大小的障碍物
+    /// 从对象池获取障碍物并设置状态
     /// </summary>
     private void CreateSingleObstacle(Vector2 position)
     {
-        GameObject obstacle = Instantiate(
-            obstaclePrefab,
-            new Vector3(position.x, position.y, 0f),
-            Quaternion.identity
+        GameObject obstacle =
+            ObjectPoolManager.Instance.Get(obstaclePrefab);
+
+        // 重置位置和旋转
+        obstacle.transform.position =
+            new Vector3(position.x, position.y, 0f);
+
+        obstacle.transform.rotation = Quaternion.identity;
+
+        // 随机设置障碍物大小
+        float diameter = Random.Range(
+            obstacleMinDiameter,
+            obstacleMaxDiameter
         );
 
-        float diameter = Random.Range(obstacleMinDiameter, obstacleMaxDiameter);
-        obstacle.transform.localScale = Vector3.one * (diameter / prefabDiameter);
+        obstacle.transform.localScale =
+            Vector3.one * (diameter / prefabDiameter);
 
         spawnedList.Add(obstacle);
     }
